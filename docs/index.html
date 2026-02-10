@@ -51,6 +51,27 @@
             font-size: 1.05rem;
         }
 
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--edge);
+            background: #ffffffcc;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
         .layout {
             display: grid;
             grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
@@ -206,6 +227,55 @@
             font-size: 1rem;
         }
 
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .info-card {
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--edge);
+            background: #ffffff;
+        }
+
+        details {
+            border: 1px solid var(--edge);
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: #ffffff;
+        }
+
+        details + details {
+            margin-top: 12px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .footer-panel {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .developer-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 18px;
+            border: 1px solid var(--edge);
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .developer-card a {
+            color: #38bdf8;
+        }
+
         .recommendations {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -235,6 +305,11 @@
     <header>
         <h1>Severance and Exit Financial Calculator</h1>
         <p>Static, browser-based calculator for German employment exit planning. No backend required.</p>
+        <div class="hero-badges">
+            <span class="badge">Fuenftelregelung tax logic</span>
+            <span class="badge">ALG1 + Kindergeld modeling</span>
+            <span class="badge">2026-2027 runway focus</span>
+        </div>
     </header>
 
     <div class="layout">
@@ -344,8 +419,72 @@
 
             <div id="stateInfo" class="note" style="display:none;"></div>
             <div id="result" class="section" style="display:none;"></div>
+
+            <div class="section">
+                <h3>Important information and FAQ</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Tax and benefits</h4>
+                        <p>Fuenftelregelung spreads severance across five years for tax calculation. It can reduce the effective tax rate on severance.</p>
+                        <ul>
+                            <li>Tax Class 3: about 67% net</li>
+                            <li>Tax Class 1: about 60% net</li>
+                            <li>Kindergeld: 250 EUR per child per month</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>ALG1 application</h4>
+                        <p>Register immediately after termination notice to avoid benefit delays.</p>
+                        <ul>
+                            <li><a href="https://www.arbeitsagentur.de/" target="_blank" rel="noopener">Federal Employment Agency</a></li>
+                            <li><a href="https://www.arbeitsagentur.de/eservices" target="_blank" rel="noopener">Online registration</a></li>
+                            <li><a href="https://www.arbeitsagentur.de/dienststellen" target="_blank" rel="noopener">Office finder</a></li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>Family benefits</h4>
+                        <ul>
+                            <li><a href="https://www.arbeitsagentur.de/familie-und-kinder/kindergeld" target="_blank" rel="noopener">Kindergeld info</a></li>
+                            <li><a href="https://www.arbeitsagentur.de/datei/kg1-hauptantrag_ba013134.pdf" target="_blank" rel="noopener">Kindergeld application form</a></li>
+                            <li><a href="https://www.zbfs.bayern.de/familie/familiengeld/" target="_blank" rel="noopener">Bavaria Familiengeld</a></li>
+                            <li><a href="https://www.lsnq.de/" target="_blank" rel="noopener">Saxony Landeserziehungsgeld</a></li>
+                            <li><a href="https://landesverwaltungsamt.thueringen.de/" target="_blank" rel="noopener">Thueringen Familiengeld</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <details>
+                        <summary>What is Sperrzeit and how does it affect ALG1?</summary>
+                        <p>Sperrzeit is a blocking period where you receive no ALG1 if you resign voluntarily, sign a termination agreement, or are terminated for misconduct. The typical duration is 3 months. During Sperrzeit you rely on severance and savings.</p>
+                    </details>
+                    <details>
+                        <summary>How long does ALG1 last?</summary>
+                        <p>Standard duration is 12 months for people under 50, assuming sufficient contribution history. Longer periods can apply for older age groups.</p>
+                    </details>
+                    <details>
+                        <summary>What inputs does the calculator use?</summary>
+                        <p>It uses gross salary, severance months, tax class, children benefits, and monthly expenses to estimate runway and severance negotiation options.</p>
+                    </details>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Important disclaimers</h3>
+                <div class="warning">
+                    This is a planning tool, not professional tax or financial advice. Tax results are simplified and can differ by church tax, solidarity surcharge, municipal rates, and personal deductions. Consult a tax advisor or legal counsel for precise guidance.
+                </div>
+            </div>
         </main>
     </div>
+
+    <section class="footer-panel">
+        <div class="developer-card">
+            <p><strong>Developed by</strong></p>
+            <p>Vinod Kumar Neelakantam</p>
+            <p><a href="https://www.linkedin.com/in/vinodneelakantam/" target="_blank" rel="noopener">https://www.linkedin.com/in/vinodneelakantam/</a></p>
+        </div>
+    </section>
 
     <script>
         function toNumber(value) {
