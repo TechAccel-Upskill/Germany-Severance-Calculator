@@ -10,14 +10,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --ink: #0f172a;
-            --muted: #475569;
-            --primary: #0f766e;
-            --accent: #f59e0b;
+            --ink: #0b1220;
+            --muted: #3f4b5f;
+            --primary: #0b6e6b;
+            --primary-strong: #0a514f;
+            --accent: #f2a900;
+            --accent-strong: #d97904;
             --surface: #ffffff;
-            --panel: #f8fafc;
-            --edge: #e2e8f0;
-            --shadow: 0 24px 50px rgba(15, 23, 42, 0.15);
+            --panel: #f4f7fb;
+            --edge: #d8e0ea;
+            --shadow: 0 22px 55px rgba(15, 23, 42, 0.12);
+            --glow: 0 12px 30px rgba(14, 116, 144, 0.18);
         }
 
         * {
@@ -28,14 +31,38 @@
             margin: 0;
             font-family: "Space Grotesk", system-ui, sans-serif;
             color: var(--ink);
-            background: radial-gradient(circle at 10% 10%, #fef3c7 0%, transparent 35%),
-                        radial-gradient(circle at 90% 20%, #ccfbf1 0%, transparent 40%),
-                        linear-gradient(120deg, #f8fafc 0%, #f1f5f9 60%, #f8fafc 100%);
+            background: radial-gradient(circle at 8% 8%, #fdecc8 0%, transparent 38%),
+                        radial-gradient(circle at 92% 18%, #b8f0ea 0%, transparent 42%),
+                        radial-gradient(circle at 70% 90%, #ffe8d2 0%, transparent 35%),
+                        linear-gradient(130deg, #f7fbff 0%, #eef3f8 55%, #f7fbff 100%);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 15% 75%, rgba(14, 116, 144, 0.08), transparent 40%),
+                        radial-gradient(circle at 85% 85%, rgba(242, 169, 0, 0.08), transparent 42%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         header {
             padding: 48px 20px 20px;
             text-align: center;
+            position: relative;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 6px;
+            width: min(420px, 70%);
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(11, 110, 107, 0.65), transparent);
+            transform: translateX(-50%);
         }
 
         header h1 {
@@ -49,6 +76,7 @@
             max-width: 680px;
             color: var(--muted);
             font-size: 1.05rem;
+            line-height: 1.6;
         }
 
         .hero-badges {
@@ -66,19 +94,25 @@
             padding: 6px 14px;
             border-radius: 999px;
             border: 1px solid var(--edge);
-            background: #ffffffcc;
+            background: #ffffffd9;
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--muted);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
         }
 
         .layout {
             display: grid;
-            grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+            grid-template-columns: 1fr;
             gap: 24px;
-            padding: 20px;
-            max-width: 1200px;
+            padding: 20px 40px 40px;
+            max-width: 1600px;
             margin: 0 auto 60px;
+            width: 100%;
+        }
+
+        .layout > .panel {
+            animation: floatIn 0.6s ease both;
         }
 
         .panel {
@@ -87,17 +121,25 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--edge);
             padding: 24px;
+            backdrop-filter: blur(4px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 26px 60px rgba(15, 23, 42, 0.16);
         }
 
         .aside-panel {
-            background: #f8fafc;
-            border: 1px solid var(--edge);
-            box-shadow: none;
+            background: linear-gradient(150deg, #f9fbff 0%, #eef6f4 100%);
+            border: 1px solid #cfe0e8;
+            box-shadow: var(--glow);
         }
 
         .aside-stack {
             display: grid;
-            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
         }
 
         .aside-card {
@@ -105,6 +147,13 @@
             border: 1px solid var(--edge);
             border-radius: 16px;
             padding: 14px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .aside-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
         }
 
         .aside-card h3 {
@@ -130,10 +179,31 @@
         .panel h2 {
             margin: 0 0 16px;
             font-size: 1.3rem;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .panel h2::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #182233;
+        }
+
+        h4 {
+            color: #1a2333;
         }
 
         .note {
-            background: #ecfeff;
+            background: #e9fbff;
             border-left: 4px solid var(--primary);
             padding: 12px 14px;
             border-radius: 12px;
@@ -152,22 +222,43 @@
             display: block;
             font-weight: 600;
             margin-bottom: 6px;
+            color: #1a2434;
         }
 
         input, select {
             width: 100%;
             padding: 10px 12px;
             border-radius: 12px;
-            border: 1px solid var(--edge);
-            background: var(--panel);
+            border: 1px solid #cfd8e3;
+            background: #f7f9fc;
             font-family: inherit;
             font-size: 0.98rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1fa3a0;
+            box-shadow: 0 0 0 3px rgba(31, 163, 160, 0.18);
+            background: #ffffff;
+            transform: translateY(-1px);
         }
 
         .section {
             border-top: 1px solid var(--edge);
             padding-top: 18px;
             margin-top: 18px;
+            position: relative;
+        }
+
+        .section::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(11, 110, 107, 0.5), transparent);
         }
 
         .actions {
@@ -178,7 +269,7 @@
         }
 
         button {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #159b97 100%);
             color: #fff;
             border: none;
             padding: 12px 22px;
@@ -186,10 +277,18 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 0.98rem;
+            box-shadow: 0 16px 28px rgba(11, 110, 107, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 32px rgba(11, 110, 107, 0.3);
+            filter: brightness(1.02);
         }
 
         button.secondary {
-            background: #0f172a;
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
         }
 
         .metric-grid {
@@ -204,6 +303,13 @@
             border: 1px solid var(--edge);
             border-radius: 16px;
             padding: 14px;
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
         }
 
         .metric-card h3 {
@@ -222,14 +328,14 @@
             display: inline-block;
             padding: 6px 10px;
             border-radius: 999px;
-            background: #e0f2fe;
-            color: #075985;
+            background: #d9f4f1;
+            color: #0f4f4d;
             font-size: 0.85rem;
             font-weight: 600;
         }
 
         .warning {
-            background: #fef3c7;
+            background: #fff2cc;
             border-left: 4px solid var(--accent);
             padding: 12px 14px;
             border-radius: 12px;
@@ -238,7 +344,7 @@
         }
 
         .success {
-            background: #dcfce7;
+            background: #dcf7ef;
             border-left: 4px solid #16a34a;
             padding: 12px 14px;
             border-radius: 12px;
@@ -258,6 +364,13 @@
             border: 1px solid var(--edge);
             border-radius: 16px;
             padding: 12px;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
         }
 
         .chart-card h4 {
@@ -277,6 +390,13 @@
             padding: 16px;
             border: 1px solid var(--edge);
             background: #ffffff;
+            box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
         }
 
         details {
@@ -284,6 +404,7 @@
             border-radius: 14px;
             padding: 12px 14px;
             background: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
         }
 
         details + details {
@@ -296,7 +417,7 @@
         }
 
         .footer-panel {
-            max-width: 1200px;
+            max-width: 1320px;
             margin: 0 auto 60px;
             padding: 0 20px;
         }
@@ -306,8 +427,8 @@
             padding: 20px;
             border-radius: 18px;
             border: 1px solid var(--edge);
-            background: #0f172a;
-            color: #e2e8f0;
+            background: linear-gradient(140deg, #0b1220 0%, #1c2a3a 100%);
+            color: #e8edf3;
         }
 
         .developer-card a {
@@ -326,6 +447,23 @@
             border-radius: 14px;
             padding: 12px;
             background: #fff;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .recommendation-card.positive {
+            border-color: rgba(22, 163, 74, 0.35);
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 70%);
+        }
+
+        .recommendation-card.negative {
+            border-color: rgba(234, 88, 12, 0.4);
+            background: linear-gradient(135deg, #fff7ed 0%, #ffffff 70%);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
         }
 
         .recommendation-card h4 {
@@ -335,6 +473,22 @@
         @media (max-width: 900px) {
             .layout {
                 grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .aside-stack {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
@@ -342,37 +496,10 @@
 <body>
     <header>
         <h1>Severance and Exit Financial Calculator</h1>
-        <p>Static, browser-based calculator for German employment exit planning. No backend required.</p>
-        <div class="hero-badges">
-            <span class="badge">Fuenftelregelung tax logic</span>
-            <span class="badge">ALG1 + Kindergeld modeling</span>
-            <span class="badge">2026-2027 runway focus</span>
-        </div>
+        <p><strong>Important</strong> Apply for unemployment benefits within 3 days of receiving termination notice.</p>
     </header>
 
     <div class="layout">
-        <aside class="panel aside-panel">
-            <h2>Quick notes</h2>
-            <div class="aside-stack">
-                <div class="aside-card">
-                    <h3>Tax logic</h3>
-                    <p>This calculator uses the Fuenftelregelung (five-year rule) for severance tax estimates.</p>
-                </div>
-                <div class="aside-card">
-                    <h3>Key references</h3>
-                    <ul class="key-list">
-                        <li><span>ALG1:</span> 60-67% of net salary</li>
-                        <li><span>Kindergeld:</span> 250 EUR per child per month</li>
-                        <li><span>Tax Class 3:</span> about 67% net</li>
-                        <li><span>Tax Class 1:</span> about 60% net</li>
-                    </ul>
-                </div>
-                <div class="aside-card">
-                    <h3>Important</h3>
-                    <p>Apply for unemployment benefits within 3 days of receiving termination notice.</p>
-                </div>
-            </div>
-        </aside>
 
         <main class="panel">
             <h2>Input your parameters</h2>
@@ -383,7 +510,7 @@
                         <input type="number" id="salary" min="30000" max="300000" value="90000" step="5000" required>
                     </div>
                     <div>
-                        <label for="months_worked">Months of Salary in 2026</label>
+                        <label for="months_worked">Months of Salary in Year 1</label>
                         <input type="number" id="months_worked" min="1" max="12" value="6" step="1" required>
                     </div>
                     <div>
@@ -467,11 +594,11 @@
                 <div class="info-grid">
                     <div class="info-card">
                         <h4>Tax and benefits</h4>
-                        <p>Fuenftelregelung spreads severance across five years for tax calculation. It can reduce the effective tax rate on severance.</p>
+                        <p>Severance and benefits are modeled with simplified assumptions. Confirm current rules for your situation.</p>
                         <ul>
-                            <li>Tax Class 3: about 67% net</li>
-                            <li>Tax Class 1: about 60% net</li>
-                            <li>Kindergeld: 250 EUR per child per month</li>
+                            <li>Tax class and deductions shift net income.</li>
+                            <li>Benefit amounts depend on eligibility and earnings history.</li>
+                            <li>Regional programs may add household support.</li>
                         </ul>
                     </div>
                     <div class="info-card">
@@ -643,17 +770,23 @@
 
             const salary2026 = monthlyNet * inputs.monthsWorked2026;
             const alg1Monthly = monthlyNet * alg1Rate;
-            const monthsRemaining2026 = 12 - inputs.monthsWorked2026;
-            const monthsAlg12026 = Math.max(0, monthsRemaining2026 - inputs.sperrzeitMonths);
+
+            const windowMonthsTotal = 18;
+            const monthsAfterExit2026 = Math.max(0, Math.min(12 - inputs.monthsWorked2026, windowMonthsTotal));
+            const monthsAfterExit2027 = Math.max(0, Math.min(12, windowMonthsTotal - monthsAfterExit2026));
+            const monthsAfterExitTotal = monthsAfterExit2026 + monthsAfterExit2027;
+
+            const monthsAlg1Total = Math.max(0, Math.min(12, monthsAfterExitTotal - inputs.sperrzeitMonths));
+            const monthsAlg12026 = Math.max(0, Math.min(monthsAfterExit2026 - inputs.sperrzeitMonths, monthsAlg1Total));
+            const monthsAlg12027 = Math.max(0, Math.min(monthsAfterExit2027, monthsAlg1Total - monthsAlg12026));
+
             const alg12026 = alg1Monthly * monthsAlg12026;
-
-            const kindergeld2026 = kindergeldMonthly * 12;
-            const familiengeld2026 = familiengeldMonthly * 12;
-
-            const monthsAlg12027 = Math.max(0, 12 - monthsAlg12026);
             const alg12027 = alg1Monthly * monthsAlg12027;
-            const kindergeld2027 = kindergeldMonthly * 12;
-            const familiengeld2027 = familiengeldMonthly * 12;
+
+            const kindergeld2026 = kindergeldMonthly * monthsAfterExit2026;
+            const familiengeld2026 = familiengeldMonthly * monthsAfterExit2026;
+            const kindergeld2027 = kindergeldMonthly * monthsAfterExit2027;
+            const familiengeld2027 = familiengeldMonthly * monthsAfterExit2027;
 
             const cashAfterExit = netSeverance + alg12026 + alg12027 + kindergeld2026 + kindergeld2027 + familiengeld2026 + familiengeld2027;
             const cashAfterExit2026 = netSeverance + alg12026 + kindergeld2026 + familiengeld2026;
@@ -689,7 +822,10 @@
                 runwayMonths,
                 total2026,
                 total2027,
-                total2Years: total2026 + total2027
+                total2Years: total2026 + total2027,
+                windowMonthsTotal,
+                monthsAfterExit2026,
+                monthsAfterExit2027
             };
         }
 
@@ -777,9 +913,10 @@
             const result = document.getElementById("result");
             result.style.display = "block";
 
-            const monthsAfterExit2026 = 12 - inputs.monthsWorked2026;
+            const monthsAfterExit2026 = results.monthsAfterExit2026;
+            const monthsAfterExit2027 = results.monthsAfterExit2027;
             const expenses2026 = inputs.monthlyExpenses * monthsAfterExit2026;
-            const expenses2027 = inputs.monthlyExpenses * 12;
+            const expenses2027 = inputs.monthlyExpenses * monthsAfterExit2027;
             const totalIncomeAfterExit = results.cashAfterExit;
             const totalExpensesProjected = expenses2026 + expenses2027;
             const surplusDeficit = totalIncomeAfterExit - totalExpensesProjected;
@@ -794,7 +931,10 @@
             const optionBreakeven = Math.max(1, Math.ceil(breakevenMonths));
             const optionSurplus = Math.max(1, Math.floor(breakevenMonths + 2));
 
-            const recommendationCards = [optionDeficit, optionBreakeven, optionSurplus].map((option) => {
+            const uniqueOptions = Array.from(new Set([optionDeficit, optionBreakeven, optionSurplus]))
+                .sort((a, b) => a - b);
+
+            const recommendationCards = uniqueOptions.map((option) => {
                 const grossOption = results.monthlyGross * option;
                 const netOption = grossOption * netSevRate;
                 const projected = totalIncomeAfterExit - totalExpensesProjected + (netOption - results.netSeverance);
@@ -802,12 +942,14 @@
                     ? "Break-even"
                     : projected >= 0 ? "Surplus" : "Deficit";
                 const amount = projected >= 0 ? formatCurrency(projected) : `-${formatCurrency(Math.abs(projected))}`;
-                return `<div class="recommendation-card"><h4>${option} months</h4><p>${label}: ${amount}</p></div>`;
+                const monthLabel = option === 1 ? "month" : "months";
+                const cardTone = projected >= 0 ? "positive" : "negative";
+                return `<div class="recommendation-card ${cardTone}"><h4>${option} ${monthLabel}</h4><p>${label}: ${amount}</p></div>`;
             }).join("");
 
             const scenarioNote = surplusDeficit < 0
-                ? `<div class="warning">You have a projected deficit of ${formatCurrency(Math.abs(surplusDeficit))} for 2026-2027. Consider negotiating more severance months.</div>`
-                : `<div class="success">You have a projected surplus of ${formatCurrency(surplusDeficit)} for 2026-2027. Additional months add more buffer.</div>`;
+                ? `<div class="warning">You have a projected deficit of ${formatCurrency(Math.abs(surplusDeficit))} across two financial years after exit. In today\'s AI-driven job market, landing the right role in the right location can take time, so this projects what you need to cover up to 18 months from exit. If the severance package offered differs from your input, update the months to see how the gap changes.</div>`
+                : `<div class="success">You have a projected surplus of ${formatCurrency(surplusDeficit)} across two financial years after exit. In today\'s AI-driven job market, landing the right role in the right location can take time, so this projects what you need to cover up to 18 months from exit. If the severance package offered differs from your input, adjust the months to see the updated buffer.</div>`;
 
             result.innerHTML = `
                 <h3>Scenario results</h3>
@@ -823,11 +965,11 @@
                     <h3>Income vs expenses</h3>
                     <div class="chart-grid">
                         <div class="chart-card">
-                            <h4>2026 income vs expenses</h4>
+                            <h4>Year 1 income vs expenses</h4>
                             <canvas id="chart2026" height="220"></canvas>
                         </div>
                         <div class="chart-card">
-                            <h4>2027 income vs expenses</h4>
+                            <h4>Year 2 income vs expenses</h4>
                             <canvas id="chart2027" height="220"></canvas>
                         </div>
                     </div>
@@ -837,8 +979,8 @@
                     <div class="metric-grid">
                         <div class="metric-card"><h3>Kindergeld monthly</h3><p>${formatCurrency(results.kindergeldMonthly)}</p></div>
                         <div class="metric-card"><h3>Familiengeld monthly</h3><p>${formatCurrency(results.familiengeldMonthly)}</p></div>
-                        <div class="metric-card"><h3>ALG1 2026</h3><p>${formatCurrency(results.alg12026)}</p></div>
-                        <div class="metric-card"><h3>ALG1 2027</h3><p>${formatCurrency(results.alg12027)}</p></div>
+                        <div class="metric-card"><h3>ALG1 Year 1</h3><p>${formatCurrency(results.alg12026)}</p></div>
+                        <div class="metric-card"><h3>ALG1 Year 2</h3><p>${formatCurrency(results.alg12027)}</p></div>
                     </div>
                 </div>
                 <div class="section">
@@ -850,10 +992,10 @@
                     <h3>Expense projection</h3>
                     <div class="metric-grid">
                         <div class="metric-card"><h3>Monthly expenses</h3><p>${formatCurrency(inputs.monthlyExpenses)}</p></div>
-                        <div class="metric-card"><h3>2026 expenses</h3><p>${formatCurrency(expenses2026)}</p></div>
-                        <div class="metric-card"><h3>2027 expenses</h3><p>${formatCurrency(expenses2027)}</p></div>
-                        <div class="metric-card"><h3>Total 2026 income</h3><p>${formatCurrency(results.total2026)}</p></div>
-                        <div class="metric-card"><h3>Total 2027 income</h3><p>${formatCurrency(results.total2027)}</p></div>
+                        <div class="metric-card"><h3>Year 1 expenses</h3><p>${formatCurrency(expenses2026)}</p></div>
+                        <div class="metric-card"><h3>Year 2 expenses</h3><p>${formatCurrency(expenses2027)}</p></div>
+                        <div class="metric-card"><h3>Total Year 1 income</h3><p>${formatCurrency(results.total2026)}</p></div>
+                        <div class="metric-card"><h3>Total Year 2 income</h3><p>${formatCurrency(results.total2027)}</p></div>
                     </div>
                 </div>
             `;
