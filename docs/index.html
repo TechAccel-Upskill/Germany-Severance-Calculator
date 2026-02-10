@@ -832,6 +832,13 @@
 
         function buildChildAgeInputs(count) {
             const container = document.getElementById("childAges");
+            const existingAges = {};
+            container.querySelectorAll("input[id^='child_age_']").forEach((input) => {
+                const index = Number(input.id.replace("child_age_", ""));
+                if (Number.isInteger(index)) {
+                    existingAges[index] = input.value;
+                }
+            });
             container.innerHTML = "";
             for (let i = 0; i < count; i += 1) {
                 const wrapper = document.createElement("div");
@@ -844,7 +851,7 @@
                 input.min = "0";
                 input.max = "25";
                 input.step = "1";
-                input.value = "2";
+                input.value = existingAges[i] ?? "2";
                 wrapper.appendChild(label);
                 wrapper.appendChild(input);
                 container.appendChild(wrapper);
