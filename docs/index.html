@@ -89,6 +89,44 @@
             padding: 24px;
         }
 
+        .aside-panel {
+            background: #f8fafc;
+            border: 1px solid var(--edge);
+            box-shadow: none;
+        }
+
+        .aside-stack {
+            display: grid;
+            gap: 14px;
+        }
+
+        .aside-card {
+            background: #ffffff;
+            border: 1px solid var(--edge);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .aside-card h3 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .key-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 6px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .key-list span {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
         .panel h2 {
             margin: 0 0 16px;
             font-size: 1.3rem;
@@ -313,22 +351,26 @@
     </header>
 
     <div class="layout">
-        <aside class="panel">
+        <aside class="panel aside-panel">
             <h2>Quick notes</h2>
-            <div class="note">
-                This calculator uses the Fuenftelregelung (five-year rule) for severance tax estimates.
-            </div>
-            <div class="section">
-                <div class="pill">Key references</div>
-                <ul>
-                    <li>ALG1: 60-67% of net salary</li>
-                    <li>Kindergeld: 250 EUR per child per month</li>
-                    <li>Tax Class 3: about 67% net</li>
-                    <li>Tax Class 1: about 60% net</li>
-                </ul>
-            </div>
-            <div class="warning">
-                Apply for unemployment benefits within 3 days of receiving termination notice.
+            <div class="aside-stack">
+                <div class="aside-card">
+                    <h3>Tax logic</h3>
+                    <p>This calculator uses the Fuenftelregelung (five-year rule) for severance tax estimates.</p>
+                </div>
+                <div class="aside-card">
+                    <h3>Key references</h3>
+                    <ul class="key-list">
+                        <li><span>ALG1:</span> 60-67% of net salary</li>
+                        <li><span>Kindergeld:</span> 250 EUR per child per month</li>
+                        <li><span>Tax Class 3:</span> about 67% net</li>
+                        <li><span>Tax Class 1:</span> about 60% net</li>
+                    </ul>
+                </div>
+                <div class="aside-card">
+                    <h3>Important</h3>
+                    <p>Apply for unemployment benefits within 3 days of receiving termination notice.</p>
+                </div>
             </div>
         </aside>
 
