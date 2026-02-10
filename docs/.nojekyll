@@ -1,0 +1,5 @@
+# GitHub Pages configuration
+# This file tells GitHub Pages to serve from the docs/ folder
+
+# No Jekyll processing (treat as plain HTML)
+/.nojekyll

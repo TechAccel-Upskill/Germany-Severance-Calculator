@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany Severance and Exit Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --ink: #0f172a;
+            --muted: #475569;
+            --primary: #0f766e;
+            --accent: #f59e0b;
+            --surface: #ffffff;
+            --panel: #f8fafc;
+            --edge: #e2e8f0;
+            --shadow: 0 24px 50px rgba(15, 23, 42, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Space Grotesk", system-ui, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(circle at 10% 10%, #fef3c7 0%, transparent 35%),
+                        radial-gradient(circle at 90% 20%, #ccfbf1 0%, transparent 40%),
+                        linear-gradient(120deg, #f8fafc 0%, #f1f5f9 60%, #f8fafc 100%);
+        }
+
+        header {
+            padding: 48px 20px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: "Fraunces", serif;
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            margin: 0 0 8px;
+        }
+
+        header p {
+            margin: 0 auto;
+            max-width: 680px;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+            gap: 24px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--edge);
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin: 0 0 16px;
+            font-size: 1.3rem;
+        }
+
+        .note {
+            background: #ecfeff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #0f172a;
+            margin-top: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--edge);
+            background: var(--panel);
+            font-family: inherit;
+            font-size: 0.98rem;
+        }
+
+        .section {
+            border-top: 1px solid var(--edge);
+            padding-top: 18px;
+            margin-top: 18px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.98rem;
+        }
+
+        button.secondary {
+            background: #0f172a;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .metric-card {
+            background: var(--panel);
+            border: 1px solid var(--edge);
+            border-radius: 16px;
+            padding: 14px;
+        }
+
+        .metric-card h3 {
+            margin: 0 0 6px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        .metric-card p {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #e0f2fe;
+            color: #075985;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid var(--accent);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            margin-top: 14px;
+        }
+
+        .success {
+            background: #dcfce7;
+            border-left: 4px solid #16a34a;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            margin-top: 14px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .chart-card {
+            background: #fff;
+            border: 1px solid var(--edge);
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .chart-card h4 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .recommendation-card {
+            border: 1px dashed var(--edge);
+            border-radius: 14px;
+            padding: 12px;
+            background: #fff;
+        }
+
+        .recommendation-card h4 {
+            margin: 0 0 6px;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Severance and Exit Financial Calculator</h1>
+        <p>Static, browser-based calculator for German employment exit planning. No backend required.</p>
+    </header>
+
+    <div class="layout">
+        <aside class="panel">
+            <h2>Quick notes</h2>
+            <div class="note">
+                This calculator uses the Fuenftelregelung (five-year rule) for severance tax estimates.
+            </div>
+            <div class="section">
+                <div class="pill">Key references</div>
+                <ul>
+                    <li>ALG1: 60-67% of net salary</li>
+                    <li>Kindergeld: 250 EUR per child per month</li>
+                    <li>Tax Class 3: about 67% net</li>
+                    <li>Tax Class 1: about 60% net</li>
+                </ul>
+            </div>
+            <div class="warning">
+                Apply for unemployment benefits within 3 days of receiving termination notice.
+            </div>
+        </aside>
+
+        <main class="panel">
+            <h2>Input your parameters</h2>
+            <form id="calcForm">
+                <div class="form-grid">
+                    <div>
+                        <label for="salary">Annual Gross Salary (EUR)</label>
+                        <input type="number" id="salary" min="30000" max="300000" value="90000" step="5000" required>
+                    </div>
+                    <div>
+                        <label for="months_worked">Months of Salary in 2026</label>
+                        <input type="number" id="months_worked" min="1" max="12" value="6" step="1" required>
+                    </div>
+                    <div>
+                        <label for="severance_months">Severance Package (months)</label>
+                        <input type="number" id="severance_months" min="0" max="24" value="6" step="1" required>
+                    </div>
+                    <div>
+                        <label for="sperrzeit">Sperrzeit (months)</label>
+                        <input type="number" id="sperrzeit" min="0" max="6" value="0" step="1" required>
+                    </div>
+                    <div>
+                        <label for="plz">Postal Code (PLZ)</label>
+                        <input type="text" id="plz" maxlength="5" value="89231" required>
+                    </div>
+                    <div>
+                        <label for="tax_class">Tax Class</label>
+                        <select id="tax_class">
+                            <option>Tax Class 3 (Married)</option>
+                            <option>Tax Class 1 (Single)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="has_children">Dependent Children</label>
+                        <select id="has_children">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="num_children">Number of Children</label>
+                        <input type="number" id="num_children" min="0" max="5" value="0" step="1">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Children ages (for Familiengeld eligibility)</h3>
+                    <div id="childAges" class="form-grid"></div>
+                </div>
+
+                <div class="section">
+                    <h3>Monthly expenses</h3>
+                    <div class="form-grid">
+                        <div>
+                            <label for="rent">Rent / Mortgage (EUR)</label>
+                            <input type="number" id="rent" min="0" max="5000" value="1200" step="50">
+                        </div>
+                        <div>
+                            <label for="utilities">Utilities (EUR)</label>
+                            <input type="number" id="utilities" min="0" max="1000" value="250" step="25">
+                        </div>
+                        <div>
+                            <label for="groceries">Groceries (EUR)</label>
+                            <input type="number" id="groceries" min="0" max="2000" value="600" step="50">
+                        </div>
+                        <div>
+                            <label for="transport">Transport (EUR)</label>
+                            <input type="number" id="transport" min="0" max="1500" value="300" step="50">
+                        </div>
+                        <div>
+                            <label for="kindergarten">Kindergarten Fees (EUR)</label>
+                            <input type="number" id="kindergarten" min="0" max="1500" value="0" step="50">
+                        </div>
+                        <div>
+                            <label for="other">Other Expenses (EUR)</label>
+                            <input type="number" id="other" min="0" max="2000" value="650" step="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Calculate scenario</button>
+                    <button type="button" class="secondary" id="resetButton">Reset</button>
+                </div>
+            </form>
+
+            <div id="stateInfo" class="note" style="display:none;"></div>
+            <div id="result" class="section" style="display:none;"></div>
+        </main>
+    </div>
+
+    <script>
+        function toNumber(value) {
+            const parsed = Number.parseFloat(value);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat("de-DE", {
+                style: "currency",
+                currency: "EUR",
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatNumber(value, digits = 1) {
+            return new Intl.NumberFormat("en-US", {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits
+            }).format(value);
+        }
+
+        function inRange(value, min, max) {
+            return value >= min && value <= max;
+        }
+
+        function getStateFromPlz(plzStr) {
+            const plz = Number.parseInt(plzStr, 10);
+            if (!Number.isFinite(plz)) {
+                return { stateName: "Unknown", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+
+            if (inRange(plz, 80000, 87999) || inRange(plz, 89000, 89999) || inRange(plz, 91000, 94999)) {
+                return { stateName: "Bayern (Bavaria)", hasFamiliengeld: true, familiengeldAmount: 250 };
+            }
+            if (inRange(plz, 1000, 1999) || inRange(plz, 2600, 2999) || inRange(plz, 4000, 4999)) {
+                return { stateName: "Sachsen (Saxony)", hasFamiliengeld: true, familiengeldAmount: 200 };
+            }
+            if (inRange(plz, 96000, 99999) || inRange(plz, 7000, 7999)) {
+                return { stateName: "Thueringen (Thuringia)", hasFamiliengeld: true, familiengeldAmount: 200 };
+            }
+            if (inRange(plz, 10000, 14999)) {
+                return { stateName: "Berlin", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 3000, 3999) || inRange(plz, 14400, 16999) || inRange(plz, 19300, 19357)) {
+                return { stateName: "Brandenburg", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 17000, 19999) && !inRange(plz, 19300, 19357)) {
+                return { stateName: "Mecklenburg-Vorpommern", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 20000, 21999) || inRange(plz, 22000, 22999) || inRange(plz, 27000, 27999)) {
+                return { stateName: "Hamburg", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 24000, 25999) || inRange(plz, 23000, 23999)) {
+                return { stateName: "Schleswig-Holstein", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 28000, 28999) || (inRange(plz, 26000, 27999) && !inRange(plz, 27000, 27999))) {
+                return { stateName: "Bremen", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 26000, 27999) || inRange(plz, 29000, 31999) || inRange(plz, 37000, 38999) || inRange(plz, 48000, 49999)) {
+                return { stateName: "Niedersachsen (Lower Saxony)", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 32000, 33999) || inRange(plz, 34000, 36999) || inRange(plz, 40000, 47999) || inRange(plz, 50000, 53999) || inRange(plz, 57000, 59999)) {
+                return { stateName: "Nordrhein-Westfalen (NRW)", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 34000, 36999) || inRange(plz, 60000, 64999) || inRange(plz, 65000, 66999)) {
+                return { stateName: "Hessen (Hesse)", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 54000, 56999) || inRange(plz, 66000, 67999)) {
+                return { stateName: "Rheinland-Pfalz (Rhineland-Palatinate)", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 66000, 66999)) {
+                return { stateName: "Saarland", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 68000, 69999) || inRange(plz, 70000, 76999) || inRange(plz, 77000, 79999) || inRange(plz, 88000, 88999)) {
+                return { stateName: "Baden-Wuerttemberg", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+            if (inRange(plz, 6000, 6999) || inRange(plz, 38000, 39999)) {
+                return { stateName: "Sachsen-Anhalt (Saxony-Anhalt)", hasFamiliengeld: false, familiengeldAmount: 0 };
+            }
+
+            return { stateName: "Unknown", hasFamiliengeld: false, familiengeldAmount: 0 };
+        }
+
+        function calculateFuenftelregelungTax(annualSalary, severanceAmount, netRateOnSalary) {
+            const taxRateSalary = 1 - netRateOnSalary;
+            const taxOnSalary = annualSalary * taxRateSalary;
+            const fifthOfSeverance = severanceAmount / 5;
+            const combinedIncome = annualSalary + fifthOfSeverance;
+            const taxOnCombined = combinedIncome * taxRateSalary;
+            const taxPerFifth = taxOnCombined - taxOnSalary;
+            const totalSevTax = taxPerFifth * 5;
+            const netSeverance = severanceAmount - totalSevTax;
+            const effectiveRate = severanceAmount > 0 ? totalSevTax / severanceAmount : 0;
+            return { netSeverance, totalSevTax, effectiveRate };
+        }
+
+        function calculateScenario(inputs) {
+            const netRateSalary = inputs.taxClass === "Tax Class 3 (Married)" ? 0.67 : 0.60;
+            const alg1Rate = inputs.hasChildren ? 0.67 : 0.60;
+
+            const kindergeldMonthly = inputs.hasChildren ? 250 * inputs.numChildren : 0;
+            const eligibleFamiliengeld = inputs.hasChildren && inputs.hasFamiliengeld && inputs.childAges.length
+                ? inputs.childAges.filter((age) => age >= 1 && age <= 3).length
+                : 0;
+            const familiengeldMonthly = inputs.hasFamiliengeld ? inputs.familiengeldAmount * eligibleFamiliengeld : 0;
+
+            const monthlyGross = inputs.annualSalary / 12;
+            const monthlyNet = monthlyGross * netRateSalary;
+            const grossSeverance = monthlyGross * inputs.severanceMonths;
+
+            const taxResult = calculateFuenftelregelungTax(inputs.annualSalary, grossSeverance, netRateSalary);
+            const netSeverance = taxResult.netSeverance;
+
+            const salary2026 = monthlyNet * inputs.monthsWorked2026;
+            const alg1Monthly = monthlyNet * alg1Rate;
+            const monthsRemaining2026 = 12 - inputs.monthsWorked2026;
+            const monthsAlg12026 = Math.max(0, monthsRemaining2026 - inputs.sperrzeitMonths);
+            const alg12026 = alg1Monthly * monthsAlg12026;
+
+            const kindergeld2026 = kindergeldMonthly * 12;
+            const familiengeld2026 = familiengeldMonthly * 12;
+
+            const monthsAlg12027 = Math.max(0, 12 - monthsAlg12026);
+            const alg12027 = alg1Monthly * monthsAlg12027;
+            const kindergeld2027 = kindergeldMonthly * 12;
+            const familiengeld2027 = familiengeldMonthly * 12;
+
+            const cashAfterExit = netSeverance + alg12026 + alg12027 + kindergeld2026 + kindergeld2027 + familiengeld2026 + familiengeld2027;
+            const cashAfterExit2026 = netSeverance + alg12026 + kindergeld2026 + familiengeld2026;
+            const cashAfterExit2027 = alg12027 + kindergeld2027 + familiengeld2027;
+            const runwayMonths = inputs.monthlyExpenses > 0 ? cashAfterExit / inputs.monthlyExpenses : 0;
+
+            const total2026 = salary2026 + netSeverance + alg12026 + kindergeld2026 + familiengeld2026;
+            const total2027 = alg12027 + kindergeld2027 + familiengeld2027;
+
+            return {
+                monthlyGross,
+                monthlyNet,
+                grossSeverance,
+                netSeverance,
+                sevTax: taxResult.totalSevTax,
+                sevTaxRate: taxResult.effectiveRate,
+                alg1Monthly,
+                alg12026,
+                alg12027,
+                monthsAlg12026,
+                monthsAlg12027,
+                totalAlg1Months: monthsAlg12026 + monthsAlg12027,
+                kindergeldMonthly,
+                kindergeld2026,
+                kindergeld2027,
+                familiengeldMonthly,
+                familiengeld2026,
+                familiengeld2027,
+                eligibleFamiliengeld,
+                cashAfterExit,
+                cashAfterExit2026,
+                cashAfterExit2027,
+                runwayMonths,
+                total2026,
+                total2027,
+                total2Years: total2026 + total2027
+            };
+        }
+
+        function buildChildAgeInputs(count) {
+            const container = document.getElementById("childAges");
+            container.innerHTML = "";
+            for (let i = 0; i < count; i += 1) {
+                const wrapper = document.createElement("div");
+                const label = document.createElement("label");
+                label.setAttribute("for", `child_age_${i}`);
+                label.textContent = `Child ${i + 1} age`;
+                const input = document.createElement("input");
+                input.type = "number";
+                input.id = `child_age_${i}`;
+                input.min = "0";
+                input.max = "25";
+                input.step = "1";
+                input.value = "2";
+                wrapper.appendChild(label);
+                wrapper.appendChild(input);
+                container.appendChild(wrapper);
+            }
+        }
+
+        function gatherInputs() {
+            const hasChildren = document.getElementById("has_children").value === "yes";
+            const numChildren = hasChildren ? Math.min(5, Math.max(0, toNumber(document.getElementById("num_children").value))) : 0;
+            const childAges = [];
+            for (let i = 0; i < numChildren; i += 1) {
+                const input = document.getElementById(`child_age_${i}`);
+                childAges.push(input ? toNumber(input.value) : 0);
+            }
+
+            const monthlyExpenses = toNumber(document.getElementById("rent").value)
+                + toNumber(document.getElementById("utilities").value)
+                + toNumber(document.getElementById("groceries").value)
+                + toNumber(document.getElementById("transport").value)
+                + toNumber(document.getElementById("kindergarten").value)
+                + toNumber(document.getElementById("other").value);
+
+            const stateInfo = getStateFromPlz(document.getElementById("plz").value);
+
+            return {
+                annualSalary: toNumber(document.getElementById("salary").value),
+                monthsWorked2026: Math.min(12, Math.max(1, toNumber(document.getElementById("months_worked").value))),
+                severanceMonths: toNumber(document.getElementById("severance_months").value),
+                sperrzeitMonths: toNumber(document.getElementById("sperrzeit").value),
+                taxClass: document.getElementById("tax_class").value,
+                hasChildren,
+                numChildren,
+                childAges,
+                monthlyExpenses,
+                stateName: stateInfo.stateName,
+                hasFamiliengeld: stateInfo.hasFamiliengeld,
+                familiengeldAmount: stateInfo.familiengeldAmount
+            };
+        }
+
+        function renderStateInfo(inputs) {
+            const stateInfo = document.getElementById("stateInfo");
+            stateInfo.style.display = "block";
+            if (!inputs.stateName || inputs.stateName === "Unknown") {
+                stateInfo.textContent = "Postal code could not be resolved. Check the PLZ value.";
+                return;
+            }
+
+            if (inputs.hasChildren && inputs.hasFamiliengeld) {
+                const eligible = inputs.childAges.filter((age) => age >= 1 && age <= 3).length;
+                if (eligible > 0) {
+                    stateInfo.textContent = `${inputs.stateName} provides Familiengeld: ${formatCurrency(inputs.familiengeldAmount)} per month for ${eligible} eligible child(ren).`;
+                } else {
+                    stateInfo.textContent = `${inputs.stateName} provides Familiengeld only for children aged 1 to 3.`;
+                }
+            } else if (!inputs.hasChildren) {
+                stateInfo.textContent = `${inputs.stateName} has no additional family benefits without dependent children.`;
+            } else {
+                stateInfo.textContent = `${inputs.stateName} has no additional Familiengeld benefits.`;
+            }
+        }
+
+        let chart2026 = null;
+        let chart2027 = null;
+
+        function renderResults(inputs, results) {
+            const result = document.getElementById("result");
+            result.style.display = "block";
+
+            const monthsAfterExit2026 = 12 - inputs.monthsWorked2026;
+            const expenses2026 = inputs.monthlyExpenses * monthsAfterExit2026;
+            const expenses2027 = inputs.monthlyExpenses * 12;
+            const totalIncomeAfterExit = results.cashAfterExit;
+            const totalExpensesProjected = expenses2026 + expenses2027;
+            const surplusDeficit = totalIncomeAfterExit - totalExpensesProjected;
+
+            const netSevRate = results.grossSeverance > 0 ? results.netSeverance / results.grossSeverance : 0.75;
+            const netPerSeveranceMonth = results.monthlyGross * netSevRate;
+            const monthsNeededForBreakeven = netPerSeveranceMonth > 0
+                ? (totalExpensesProjected - totalIncomeAfterExit) / netPerSeveranceMonth
+                : 0;
+            const breakevenMonths = inputs.severanceMonths + monthsNeededForBreakeven;
+            const optionDeficit = Math.max(1, Math.floor(breakevenMonths - 1));
+            const optionBreakeven = Math.max(1, Math.ceil(breakevenMonths));
+            const optionSurplus = Math.max(1, Math.floor(breakevenMonths + 2));
+
+            const recommendationCards = [optionDeficit, optionBreakeven, optionSurplus].map((option) => {
+                const grossOption = results.monthlyGross * option;
+                const netOption = grossOption * netSevRate;
+                const projected = totalIncomeAfterExit - totalExpensesProjected + (netOption - results.netSeverance);
+                const label = Math.abs(projected) < netPerSeveranceMonth * 0.1
+                    ? "Break-even"
+                    : projected >= 0 ? "Surplus" : "Deficit";
+                const amount = projected >= 0 ? formatCurrency(projected) : `-${formatCurrency(Math.abs(projected))}`;
+                return `<div class="recommendation-card"><h4>${option} months</h4><p>${label}: ${amount}</p></div>`;
+            }).join("");
+
+            const scenarioNote = surplusDeficit < 0
+                ? `<div class="warning">You have a projected deficit of ${formatCurrency(Math.abs(surplusDeficit))} for 2026-2027. Consider negotiating more severance months.</div>`
+                : `<div class="success">You have a projected surplus of ${formatCurrency(surplusDeficit)} for 2026-2027. Additional months add more buffer.</div>`;
+
+            result.innerHTML = `
+                <h3>Scenario results</h3>
+                <div class="metric-grid">
+                    <div class="metric-card"><h3>Monthly gross</h3><p>${formatCurrency(results.monthlyGross)}</p></div>
+                    <div class="metric-card"><h3>Monthly net</h3><p>${formatCurrency(results.monthlyNet)}</p></div>
+                    <div class="metric-card"><h3>Net severance</h3><p>${formatCurrency(results.netSeverance)}</p></div>
+                    <div class="metric-card"><h3>ALG1 monthly</h3><p>${formatCurrency(results.alg1Monthly)}</p></div>
+                    <div class="metric-card"><h3>Runway</h3><p>${formatNumber(results.runwayMonths)} months</p></div>
+                    <div class="metric-card"><h3>Cash after exit</h3><p>${formatCurrency(results.cashAfterExit)}</p></div>
+                </div>
+                <div class="section">
+                    <h3>Income vs expenses</h3>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <h4>2026 income vs expenses</h4>
+                            <canvas id="chart2026" height="220"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h4>2027 income vs expenses</h4>
+                            <canvas id="chart2027" height="220"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3>Benefits overview</h3>
+                    <div class="metric-grid">
+                        <div class="metric-card"><h3>Kindergeld monthly</h3><p>${formatCurrency(results.kindergeldMonthly)}</p></div>
+                        <div class="metric-card"><h3>Familiengeld monthly</h3><p>${formatCurrency(results.familiengeldMonthly)}</p></div>
+                        <div class="metric-card"><h3>ALG1 2026</h3><p>${formatCurrency(results.alg12026)}</p></div>
+                        <div class="metric-card"><h3>ALG1 2027</h3><p>${formatCurrency(results.alg12027)}</p></div>
+                    </div>
+                </div>
+                <div class="section">
+                    <h3>Severance recommendation</h3>
+                    ${scenarioNote}
+                    <div class="recommendations">${recommendationCards}</div>
+                </div>
+                <div class="section">
+                    <h3>Expense projection</h3>
+                    <div class="metric-grid">
+                        <div class="metric-card"><h3>Monthly expenses</h3><p>${formatCurrency(inputs.monthlyExpenses)}</p></div>
+                        <div class="metric-card"><h3>2026 expenses</h3><p>${formatCurrency(expenses2026)}</p></div>
+                        <div class="metric-card"><h3>2027 expenses</h3><p>${formatCurrency(expenses2027)}</p></div>
+                        <div class="metric-card"><h3>Total 2026 income</h3><p>${formatCurrency(results.total2026)}</p></div>
+                        <div class="metric-card"><h3>Total 2027 income</h3><p>${formatCurrency(results.total2027)}</p></div>
+                    </div>
+                </div>
+            `;
+
+            const labels2026 = [];
+            const values2026 = [];
+            if (results.netSeverance > 0) {
+                labels2026.push("Severance");
+                values2026.push(results.netSeverance);
+            }
+            if (results.alg12026 > 0) {
+                labels2026.push(`ALG1 (${results.monthsAlg12026} mo)`);
+                values2026.push(results.alg12026);
+            }
+            if (results.kindergeld2026 > 0) {
+                labels2026.push("Kindergeld");
+                values2026.push(results.kindergeld2026);
+            }
+            if (results.familiengeld2026 > 0) {
+                labels2026.push("Familiengeld");
+                values2026.push(results.familiengeld2026);
+            }
+            labels2026.push("Expenses");
+            values2026.push(expenses2026);
+
+            const labels2027 = [];
+            const values2027 = [];
+            if (results.alg12027 > 0) {
+                labels2027.push(`ALG1 (${results.monthsAlg12027} mo)`);
+                values2027.push(results.alg12027);
+            }
+            if (results.kindergeld2027 > 0) {
+                labels2027.push("Kindergeld");
+                values2027.push(results.kindergeld2027);
+            }
+            if (results.familiengeld2027 > 0) {
+                labels2027.push("Familiengeld");
+                values2027.push(results.familiengeld2027);
+            }
+            labels2027.push("Expenses");
+            values2027.push(expenses2027);
+
+            const palette = ["#0f766e", "#0ea5e9", "#8b5cf6", "#f59e0b", "#ef4444"]; 
+
+            if (chart2026) {
+                chart2026.destroy();
+            }
+            if (chart2027) {
+                chart2027.destroy();
+            }
+
+            const ctx2026 = document.getElementById("chart2026").getContext("2d");
+            const ctx2027 = document.getElementById("chart2027").getContext("2d");
+
+            chart2026 = new Chart(ctx2026, {
+                type: "doughnut",
+                data: {
+                    labels: labels2026,
+                    datasets: [{
+                        data: values2026,
+                        backgroundColor: palette
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: "bottom" }
+                    },
+                    cutout: "50%"
+                }
+            });
+
+            chart2027 = new Chart(ctx2027, {
+                type: "doughnut",
+                data: {
+                    labels: labels2027,
+                    datasets: [{
+                        data: values2027,
+                        backgroundColor: palette
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: "bottom" }
+                    },
+                    cutout: "50%"
+                }
+            });
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const inputs = gatherInputs();
+            buildChildAgeInputs(inputs.numChildren);
+            const refreshedInputs = gatherInputs();
+            const results = calculateScenario(refreshedInputs);
+            renderStateInfo(refreshedInputs);
+            renderResults(refreshedInputs, results);
+        }
+
+        document.getElementById("calcForm").addEventListener("submit", handleFormSubmit);
+        document.getElementById("resetButton").addEventListener("click", () => {
+            document.getElementById("calcForm").reset();
+            buildChildAgeInputs(0);
+            document.getElementById("result").style.display = "none";
+            document.getElementById("stateInfo").style.display = "none";
+        });
+
+        document.getElementById("has_children").addEventListener("change", () => {
+            const hasChildren = document.getElementById("has_children").value === "yes";
+            document.getElementById("num_children").value = hasChildren ? "1" : "0";
+            buildChildAgeInputs(hasChildren ? 1 : 0);
+        });
+
+        document.getElementById("num_children").addEventListener("input", (event) => {
+            const count = Math.min(5, Math.max(0, toNumber(event.target.value)));
+            buildChildAgeInputs(count);
+        });
+
+        buildChildAgeInputs(0);
+    </script>
+</body>
+</html>
